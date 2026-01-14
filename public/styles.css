@@ -98,6 +98,7 @@
 
     [data-theme="light"] .nav-tab.active {
       color: white;
+      opacity: 0.7;
     }
 
     .view {
@@ -247,6 +248,7 @@
 
     [data-theme="light"] button[type="submit"] {
       color: white;
+      opacity: 0.7;
     }
 
     button[type="submit"]:hover {
