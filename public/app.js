@@ -1,7 +1,7 @@
 /* =========================
    CONFIG
 ========================= */
-const API_URL = 'http://localhost:3000';
+const API_URL = '/.netlify/functions';
 
 /* =========================
    DYNAMIC DROPDOWN DATA
@@ -69,6 +69,10 @@ navTabs.forEach(tab => {
     views.forEach(v => v.classList.remove('active'));
     document.getElementById(targetView + 'View').classList.add('active');
 
+    const url = new URL(window.location);
+    url.searchParams.set('view', targetView);
+    window.history.pushState({}, '', url);
+
     if (targetView === 'browse') {
       renderReports(currentFilter);
     }
@@ -109,10 +113,12 @@ typeSelect.addEventListener('change', function () {
 async function renderReports(filter = 'all') {
   reportsGrid.innerHTML = '';
 
-  const res = await fetch(`${API_URL}/reports?type=${filter}`);
+  const res = await fetch(
+    `${API_URL}/reports-get?type=${filter}`
+  );
   const reports = await res.json();
 
-  if (reports.length === 0) {
+  if (!reports.length) {
     reportsGrid.innerHTML = `
       <div class="empty-state">
         <div class="empty-state-icon">🔍</div>
@@ -142,19 +148,28 @@ async function renderReports(filter = 'all') {
 }
 
 /* =========================
-   FILTER BUTTONS
+   FILTER BUTTONS + URL
 ========================= */
 filterBtns.forEach(btn => {
   btn.addEventListener('click', function () {
+    const filter = this.dataset.filter;
+
     filterBtns.forEach(b => b.classList.remove('active'));
     this.classList.add('active');
-    currentFilter = this.dataset.filter;
-    renderReports(currentFilter);
+
+    currentFilter = filter;
+
+    const url = new URL(window.location);
+    url.searchParams.set('view', 'browse');
+    url.searchParams.set('type', filter);
+    window.history.pushState({}, '', url);
+
+    renderReports(filter);
   });
 });
 
 /* =========================
-   FORM SUBMISSION (API)
+   FORM SUBMISSION
 ========================= */
 form.addEventListener('submit', async e => {
   e.preventDefault();
@@ -162,7 +177,7 @@ form.addEventListener('submit', async e => {
   const refId = 'PS-' + Date.now().toString(36).toUpperCase();
   const data = Object.fromEntries(new FormData(form));
 
-  await fetch(`${API_URL}/reports`, {
+  await fetch(`${API_URL}/reports-post`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -192,6 +207,29 @@ form.addEventListener('submit', async e => {
 });
 
 /* =========================
-   INITIAL LOAD
+   LOAD STATE FROM URL
 ========================= */
-renderReports();
+function loadFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const view = params.get('view') || 'report';
+  const type = params.get('type') || 'all';
+
+  document
+    .querySelector(`[data-view="${view}"]`)
+    ?.click();
+
+  currentFilter = type;
+
+  filterBtns.forEach(btn => {
+    btn.classList.toggle(
+      'active',
+      btn.dataset.filter === type
+    );
+  });
+
+  if (view === 'browse') {
+    renderReports(type);
+  }
+}
+
+loadFromURL();
