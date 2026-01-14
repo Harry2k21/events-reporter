@@ -1,4 +1,161 @@
 /* =========================
+   THEME & ACCESSIBILITY UI
+========================= */
+
+// Theme Management
+const themeToggle = document.createElement('button');
+themeToggle.className = 'theme-toggle';
+themeToggle.setAttribute('aria-label', 'Toggle dark/light mode');
+document.body.appendChild(themeToggle);
+
+// Accessibility Button
+const a11yButton = document.createElement('button');
+a11yButton.className = 'a11y-button';
+a11yButton.setAttribute('aria-label', 'Accessibility information');
+a11yButton.textContent = '?';
+document.body.appendChild(a11yButton);
+
+// Accessibility Modal
+const a11yModal = document.createElement('div');
+a11yModal.className = 'a11y-modal';
+a11yModal.setAttribute('role', 'dialog');
+a11yModal.setAttribute('aria-labelledby', 'a11y-modal-title');
+a11yModal.setAttribute('aria-modal', 'true');
+a11yModal.innerHTML = `
+  <div class="a11y-modal-content">
+    <div class="a11y-modal-header">
+      <h3 id="a11y-modal-title">Accessibility Features</h3>
+      <button class="a11y-modal-close" aria-label="Close accessibility information">×</button>
+    </div>
+    <div class="a11y-modal-body">
+      <h4>Keyboard Navigation</h4>
+      <ul>
+        <li><kbd>Tab</kbd> - Navigate forward through interactive elements</li>
+        <li><kbd>Shift + Tab</kbd> - Navigate backward</li>
+        <li><kbd>Enter</kbd> or <kbd>Space</kbd> - Activate buttons and links</li>
+        <li><kbd>Esc</kbd> - Close this dialog</li>
+      </ul>
+      
+      <h4>Screen Reader Support</h4>
+      <ul>
+        <li>All form fields have descriptive labels</li>
+        <li>Required fields are clearly marked</li>
+        <li>Error messages are announced</li>
+        <li>Success notifications are live regions</li>
+      </ul>
+      
+      <h4>Visual Accessibility</h4>
+      <ul>
+        <li>WCAG 2.2 AA compliant color contrast ratios</li>
+        <li>Light and dark mode options available</li>
+        <li>Focus indicators on all interactive elements</li>
+        <li>Text can be resized up to 200% without loss of content</li>
+      </ul>
+      
+      <h4>Form Accessibility</h4>
+      <ul>
+        <li>Semantic HTML structure throughout</li>
+        <li>Clear error validation messages</li>
+        <li>Logical tab order maintained</li>
+        <li>All interactive elements keyboard accessible</li>
+      </ul>
+      
+      <p class="a11y-contact">If you encounter any accessibility barriers, please contact our support team.</p>
+    </div>
+  </div>
+`;
+document.body.appendChild(a11yModal);
+
+// Theme functionality
+const savedTheme = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', savedTheme);
+updateThemeIcon(savedTheme);
+
+themeToggle.addEventListener('click', () => {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateThemeIcon(newTheme);
+});
+
+function updateThemeIcon(theme) {
+  if (theme === 'dark') {
+    // Moon icon
+    themeToggle.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    `;
+  } else {
+    // Sun icon
+    themeToggle.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+    `;
+  }
+  themeToggle.setAttribute('aria-label', `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`);
+}
+
+// Accessibility modal functionality
+a11yButton.addEventListener('click', () => {
+  a11yModal.classList.add('show');
+  document.body.classList.add('modal-open');
+  const closeBtn = a11yModal.querySelector('.a11y-modal-close');
+  closeBtn.focus();
+});
+
+const closeModal = () => {
+  a11yModal.classList.remove('show');
+  document.body.classList.remove('modal-open');
+  a11yButton.focus();
+};
+
+a11yModal.querySelector('.a11y-modal-close').addEventListener('click', closeModal);
+
+a11yModal.addEventListener('click', (e) => {
+  if (e.target === a11yModal) {
+    closeModal();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && a11yModal.classList.contains('show')) {
+    closeModal();
+  }
+});
+
+// Trap focus in modal
+a11yModal.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab' && a11yModal.classList.contains('show')) {
+    const focusableElements = a11yModal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === firstElement) {
+        lastElement.focus();
+        e.preventDefault();
+      }
+    } else {
+      if (document.activeElement === lastElement) {
+        firstElement.focus();
+        e.preventDefault();
+      }
+    }
+  }
+});
+
+/* =========================
    CONFIG
 ========================= */
 const API_URL = '/.netlify/functions';
