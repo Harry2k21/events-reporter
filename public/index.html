@@ -8,19 +8,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" type="image/png" href="/fav.png">
+  <link rel="icon" type="image/png" alt="magnifying glass" href="/fav.png">
 </head>
 <body>
   <div class="container">
-    <div class="nav-tabs" role="tablist">
-      <button class="nav-tab active" role="tab" aria-selected="true" data-view="report">📝 Submit Report</button>
-      <button class="nav-tab" role="tab" aria-selected="false" data-view="browse">🔍 Browse Sightings</button>
-    </div>
+    <nav aria-label="Main navigation">
+      <div class="nav-tabs" role="tablist" aria-label="View selection">
+        <button class="nav-tab active" role="tab" aria-selected="true" aria-controls="reportView" data-view="report">📝 Submit Report</button>
+        <button class="nav-tab" role="tab" aria-selected="false" aria-controls="browseView" data-view="browse">🔍 Browse Sightings</button>
+      </div>
+    </nav>
 
-    <div id="reportView" class="view active">
+    <div id="reportView" class="view active" role="tabpanel" aria-labelledby="report-tab">
       <section class="app" role="region" aria-labelledby="title">
         <header>
-          <span class="badge" aria-label="Public Reporting Portal">🔍 Secure & Confidential</span>
+          <span class="badge" role="status" aria-label="Public Reporting Portal">🔍 Secure & Confidential</span>
           <h1 id="title">Report a Unusual Sighting</h1>
           <p>
             Seen something unusual? Ghosts, magical creatures, or unexplained events can be logged securely using this reporting system.
@@ -28,24 +30,26 @@
         </header>
 
         <main>
-          <div id="successMessage" class="success-message" role="alert" aria-live="polite">
+          <div id="successMessage" class="success-message" role="alert" aria-live="polite" aria-atomic="true">
             ✓ Report submitted successfully! Reference ID: <span id="refId"></span>
           </div>
 
-          <form id="reportForm" aria-describedby="form-desc">
+          <form id="reportForm" aria-describedby="form-desc" novalidate>
             <p id="form-desc" class="sr-only">Submit details of a peculiar or unexplained sighting. Required fields are marked with an asterisk.</p>
 
             <div class="row">
               <div class="field">
-                <label for="name">Your name <span class="required">*</span></label>
+                <label for="name">Your name <span class="required" aria-label="required">*</span></label>
                 <input 
                   id="name" 
                   name="name" 
                   type="text"
                   required 
                   aria-required="true"
+                  aria-describedby="name-error"
                   autocomplete="name"
                 />
+                <span id="name-error" class="sr-only" role="alert"></span>
               </div>
               <div class="field">
                 <label for="contact">Contact (email or phone)</label>
@@ -53,62 +57,73 @@
                   id="contact" 
                   name="contact" 
                   type="text"
+                  aria-describedby="contact-hint"
                   autocomplete="email"
                 />
+                <span id="contact-hint" class="sr-only">Optional: Provide email or phone number for follow-up</span>
               </div>
             </div>
 
             <div class="row">
               <div class="field">
-                <label for="type">Type of sighting <span class="required">*</span></label>
+                <label for="type">Type of sighting <span class="required" aria-label="required">*</span></label>
                 <select 
                   id="type" 
                   name="type" 
                   required 
                   aria-required="true"
                   aria-controls="specific"
+                  aria-describedby="type-error"
                 >
                   <option value="">Select type…</option>
                   <option value="ghost">Ghost Sighting</option>
                   <option value="creature">Magical Creature</option>
                   <option value="phenomenon">Unidentified Phenomenon</option>
                 </select>
+                <span id="type-error" class="sr-only" role="alert"></span>
               </div>
               <div class="field">
-                <label for="specific">Specific detail <span class="required">*</span></label>
+                <label for="specific">Specific detail <span class="required" aria-label="required">*</span></label>
                 <select 
                   id="specific" 
                   name="specific"
                   required
                   aria-required="true"
+                  aria-describedby="specific-error specific-hint"
                   disabled
                 >
                   <option value="">First select a type…</option>
                 </select>
+                <span id="specific-error" class="sr-only" role="alert"></span>
+                <span id="specific-hint" class="sr-only">This field will activate after selecting a type</span>
               </div>
             </div>
 
             <div class="row">
               <div class="field">
-                <label for="datetime">Date & time <span class="required">*</span></label>
+                <label for="datetime">Date & time <span class="required" aria-label="required">*</span></label>
                 <input 
                   type="datetime-local" 
                   id="datetime" 
                   name="datetime" 
                   required 
                   aria-required="true"
+                  aria-describedby="datetime-error"
                 />
+                <span id="datetime-error" class="sr-only" role="alert"></span>
               </div>
               <div class="field">
-                <label for="location">Location <span class="required">*</span></label>
+                <label for="location">Location <span class="required" aria-label="required">*</span></label>
                 <input 
                   id="location" 
                   name="location" 
                   type="text"
                   required 
                   aria-required="true"
+                  aria-describedby="location-error"
                   placeholder="e.g., Old Manor House, Sheffield"
                 />
+                <span id="location-error" class="sr-only" role="alert"></span>
               </div>
             </div>
 
@@ -119,27 +134,30 @@
                 name="notes" 
                 placeholder="Describe what you witnessed in detail…"
                 aria-label="Additional details about your sighting"
+                aria-describedby="notes-hint"
               ></textarea>
+              <span id="notes-hint" class="sr-only">Optional: Provide any additional context or details about your sighting</span>
             </div>
 
-            <button type="submit">Submit Report</button>
+            <button type="submit" aria-describedby="submit-hint">Submit Report</button>
+            <span id="submit-hint" class="sr-only">Press to submit your sighting report</span>
           </form>
         </main>
       </section>
     </div>
 
-    <div id="browseView" class="view">
+    <div id="browseView" class="view" role="tabpanel" aria-labelledby="browse-tab">
       <div class="browse-container">
         <div class="browse-header">
           <h2 id="recent-reports">Recent Sightings</h2>
           <div class="filter-buttons" role="group" aria-label="Filter sightings by type">
-            <button class="filter-btn active" data-filter="all">All Reports</button>
-            <button class="filter-btn" data-filter="ghost">👻 Ghosts</button>
-            <button class="filter-btn" data-filter="creature">🦄 Creatures</button>
-            <button class="filter-btn" data-filter="phenomenon">✨ Phenomena</button>
+            <button class="filter-btn active" data-filter="all" aria-pressed="true">All Reports</button>
+            <button class="filter-btn" data-filter="ghost" aria-pressed="false">👻 Ghosts</button>
+            <button class="filter-btn" data-filter="creature" aria-pressed="false">🦄 Creatures</button>
+            <button class="filter-btn" data-filter="phenomenon" aria-pressed="false">✨ Phenomena</button>
           </div>
         </div>
-        <div class="reports-grid" id="reportsGrid"></div>
+        <div class="reports-grid" id="reportsGrid" role="region" aria-live="polite" aria-label="Sightings list"></div>
       </div>
     </div>
   </div>

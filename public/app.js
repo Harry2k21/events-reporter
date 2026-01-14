@@ -40,8 +40,8 @@ a11yModal.innerHTML = `
       <ul>
         <li>All form fields have descriptive labels</li>
         <li>Required fields are clearly marked</li>
-        <li>Error messages are announced</li>
-        <li>Success notifications are live regions</li>
+        <li>Form validation provides clear feedback</li>
+        <li>Status updates are automatically announced</li>
       </ul>
       
       <h4>Visual Accessibility</h4>
@@ -49,7 +49,7 @@ a11yModal.innerHTML = `
         <li>WCAG 2.2 AA compliant color contrast ratios</li>
         <li>Light and dark mode options available</li>
         <li>Focus indicators on all interactive elements</li>
-        <li>Text can be resized up to 200% without loss of content</li>
+        <li>Responsive design adapts to different screen sizes</li>
       </ul>
       
       <h4>Form Accessibility</h4>
